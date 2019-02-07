@@ -35,7 +35,7 @@ app.get('/test', (req, res) => res.send('Hello World!'))
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
-app.all('/car', function(req, res){    
+app.all('/invoice', function(req, res){    
 
 
 // create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
