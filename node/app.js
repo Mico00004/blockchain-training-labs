@@ -68,44 +68,63 @@ console.log("Assigning transaction_id: ", tx_id._transaction_id);
 // changeCarOwner chaincode function - requires 2 args , ex: args: ['CAR10', 'Dave'],
 // must send the proposal to endorsing peers
 var request = {
-  chaincodeId: 'fabcar',
+  chaincodeId: 'fabinvoice',
   chainId: 'mychannel',
   txId: tx_id
 };
 
-var newcar = [];
-var carid = req.body.carid;
-var make = req.body.make;
-var model = req.body.model;
-var color = req.body.color;
-var owner = req.body.owner;
-newcar.push(carid);
+var newinvoice = [];
+var invoiceid = req.body.invoiceid;
+var invoicenumber = req.body.invoicenumber;
+var billedto = req.body.billedto;
+var invoicedate = req.body.invoicedate;
+var invoiceamount = req.body.invoiceamount;
+var itemdescription = req.body.invoiceamount;
+var gr = req.body.gr;
+var ispaid = req.body.ispaid;
+var paidamount = req.body.paidamount;
+var repaid = req.body.repaid;
+var repaymentamount = req.body.repaymentamount;
+
+newinvoice.push(invoiceid);
 if (req.method == "POST")
 {
   request.fcn='createCar';
-  newcar.push(make);
-  newcar.push(model);
-  newcar.push(color);
-  newcar.push(owner); 
+  newinvoice.push(invoicenumber);
+  newinvoice.push(billedto);
+  newinvoice.push(invoicedate);
+  newinvoice.push(invoiceamount);
+  newinvoice.push(itemdescription);
+  newinvoice.push(gr);
+  newinvoice.push(ispaid);
+  newinvoice.push(paidamount);
+  newinvoice.push(repaid);
+  newinvoice.push(repaymentamount);
 }
 else if(req.method == "PUT")
 {
-    if(owner)    
+    if(gr)    
     {
-        request.fcn= 'changeCarOwner',
-        newcar.push(owner);
+        request.fcn= 'goodsReceive',
+        newcar.push(gr);
     }
     
-    else if(color)
+    else if(ispaid && paidamount)
     {
-      //TODO START send appropriate attributes for car colour chnage
-
-      //TODO END send appropriate attributes for car colour chnage
+      	request.fcn= 'bankPaymentToSupplier',
+         newcar.push(ispaid);
+         newcar.push(paidamount);
+    }
+    else if(repaid && repaymentamount)
+    {
+      	request.fcn= 'oemRepaysToBank',
+         newcar.push(repaid);
+         newcar.push(repaymentamount);
     }
 }
 
 
-request.args=newcar;
+request.args=newinvoice;
 console.log(request);
 
 // send the transaction proposal to the peers
@@ -232,35 +251,23 @@ member_user = user_from_store;
 throw new Error('Failed to get user1.... run registerUser.js');
 }
 
-// queryCar chaincode function - requires 1 argument, ex: args: ['CAR4'],
-// queryAllCars chaincode function - requires no arguments , ex: args: [''],
+// queryInvoice chaincode function - requires 1 argument, ex: args: ['CAR4'],
+// queryAllInvoice chaincode function - requires no arguments , ex: args: [''],
 const request = {
 //targets : --- letting this default to the peers assigned to the channel
-chaincodeId: 'fabcar',
-fcn: 'queryAllCars',
+chaincodeId: 'fabinvoice',
+fcn: 'queryAllInvoice',
 args: ['']
 };
 
 
 var ar = [];
-var owner = req.query.owner;
-var car = req.query.car;
+
+var invoice = req.query.invoice;
 var attr = req.query.attr;
 
-if (owner)
-{
-  //TODO START send appropriate attributes to query Cars by owner Rich Query
-  
-  
-  //TODO END send appropriate attributes to query Cars by owner Rich Query
-}
-else if (car)
-{
-  ar.push(car);
-  request.fcn='getHistoryForCar';
-  request.args = ar;
-}
-else if (attr)
+
+if (attr)
 {
   ar.push(attr);
   request.fcn='getUser';
