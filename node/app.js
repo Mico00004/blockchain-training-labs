@@ -51,13 +51,13 @@ crypto_suite.setCryptoKeyStore(crypto_store);
 fabric_client.setCryptoSuite(crypto_suite);
 
 // get the enrolled user from persistence, this user will sign all requests
-return fabric_client.getUserContext('user1', true);
+return fabric_client.getUserContext('user2', true);
 }).then((user_from_store) => {
 if (user_from_store && user_from_store.isEnrolled()) {
-console.log('Successfully loaded user1 from persistence');
+console.log('Successfully loaded user2 from persistence');
 member_user = user_from_store;
 } else {
-throw new Error('Failed to get user1.... run registerUser.js');
+throw new Error('Failed to get user2.... run registerUser.js');
 }
 
 // get a transaction id object based on the current user assigned to fabric client
@@ -74,23 +74,23 @@ var request = {
 };
 
 var newinvoice = [];
-var invoiceid = req.body.invoiceid;
-var invoicenumber = req.body.invoicenumber;
-var billedto = req.body.billedto;
-var invoicedate = req.body.invoicedate;
-var invoiceamount = req.body.invoiceamount;
-var itemdescription = req.body.invoiceamount;
-var gr = req.body.gr;
-var ispaid = req.body.ispaid;
-var paidamount = req.body.paidamount;
-var repaid = req.body.repaid;
-var repaymentamount = req.body.repaymentamount;
 
-newinvoice.push(invoiceid);
+var invoicenumber = req.body.invoiceNumber;
+var billedto = req.body.billedTo;
+var invoicedate = req.body.invoiceDate;
+var invoiceamount = req.body.invoiceAmount;
+var itemdescription = req.body.itemDescription;
+var gr = req.body.gr;
+var ispaid = req.body.isPaid;
+var paidamount = req.body.paidAmount;
+var repaid = req.body.repaid;
+var repaymentamount = req.body.repaymentAmount;
+
+
+newinvoice.push(invoicenumber);
 if (req.method == "POST")
 {
-  request.fcn='createCar';
-  newinvoice.push(invoicenumber);
+  request.fcn='raiseInvoice';
   newinvoice.push(billedto);
   newinvoice.push(invoicedate);
   newinvoice.push(invoiceamount);
@@ -106,20 +106,27 @@ else if(req.method == "PUT")
     if(gr)    
     {
         request.fcn= 'goodsReceive',
-        newcar.push(gr);
+        newinvoice.push(gr);
     }
     
     else if(ispaid && paidamount)
     {
-      	request.fcn= 'bankPaymentToSupplier',
-         newcar.push(ispaid);
-         newcar.push(paidamount);
+        request.fcn= 'bankPaymentToSupplier',
+         newinvoice.push(ispaid);
+         newinvoice.push(paidamount);
+    
     }
     else if(repaid && repaymentamount)
     {
+      if(repaymentamount > paidamount)
+      {
       	request.fcn= 'oemRepaysToBank',
-         newcar.push(repaid);
-         newcar.push(repaymentamount);
+         newinvoice.push(repaid);
+         newinvoice.push(repaymentamount);
+      }
+      else{
+        console.log("Invalid amount");
+      }
     }
 }
 
@@ -242,13 +249,13 @@ crypto_suite.setCryptoKeyStore(crypto_store);
 fabric_client.setCryptoSuite(crypto_suite);
 
 // get the enrolled user from persistence, this user will sign all requests
-return fabric_client.getUserContext('user1', true);
+return fabric_client.getUserContext('user2', true);
 }).then((user_from_store) => {
 if (user_from_store && user_from_store.isEnrolled()) {
-console.log('Successfully loaded user1 from persistence');
+console.log('Successfully loaded user2 from persistence');
 member_user = user_from_store;
 } else {
-throw new Error('Failed to get user1.... run registerUser.js');
+throw new Error('Failed to get user2.... run registerUser.js');
 }
 
 // queryInvoice chaincode function - requires 1 argument, ex: args: ['CAR4'],
@@ -256,7 +263,7 @@ throw new Error('Failed to get user1.... run registerUser.js');
 const request = {
 //targets : --- letting this default to the peers assigned to the channel
 chaincodeId: 'fabinvoice',
-fcn: 'queryAllInvoice',
+fcn: 'queryAllInvoices',
 args: ['']
 };
 
@@ -270,7 +277,7 @@ var attr = req.query.attr;
 if (attr)
 {
   ar.push(attr);
-  request.fcn='getUser';
+  request.fcn='getUsers';
   request.args = ar;
 }
 
@@ -319,13 +326,13 @@ app.get('/block', function (req, res) {
   fabric_client.setCryptoSuite(crypto_suite);
   
   // get the enrolled user from persistence, this user will sign all requests
-  return fabric_client.getUserContext('user1', true);
+  return fabric_client.getUserContext('user2', true);
   }).then((user_from_store) => {
   if (user_from_store && user_from_store.isEnrolled()) {
-  console.log('Successfully loaded user1 from persistence');
+  console.log('Successfully loaded user2 from persistence');
   member_user = user_from_store;
   } else {
-  throw new Error('Failed to get user1.... run registerUser.js');
+  throw new Error('Failed to get user2.... run registerUser.js');
   }
 
   
